@@ -1,0 +1,37 @@
+.navbar-style {
+  background-color: #131a22;
+  /* color: white; */
+}
+
+span {
+  color: rgb(80, 80, 235);
+}
+
+#searchbar {
+  width: 53%;
+}
+
+#searchbar .input-group-text.right-search {
+  background-color: #febd69;
+}
+
+.phone-link {
+  text-decoration: none;
+  color: black;
+}
+
+.phone-link:hover {
+  text-decoration: none;
+  color: orange;
+}
+
+.stars {
+  list-style: none;
+  /* margin-left: none; */
+  padding-left: 0;
+}
+
+.stars li {
+  display: inline;
+  color: #febd69;
+}
