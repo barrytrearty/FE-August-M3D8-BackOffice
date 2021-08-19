@@ -1,6 +1,9 @@
 .navbar-style {
   background-color: #131a22;
+  position: fixed;
+  width: 100%;
   /* color: white; */
+  z-index: 1;
 }
 
 span {
@@ -8,11 +11,19 @@ span {
 }
 
 #searchbar {
-  width: 53%;
+  width: 70%;
 }
 
 #searchbar .input-group-text.right-search {
   background-color: #febd69;
+}
+
+/* .list-right {
+  display: flex;
+} */
+
+.account-for-fixed {
+  padding-top: 100px;
 }
 
 .phone-link {

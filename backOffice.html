@@ -18,8 +18,8 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-style">
-      <a class="navbar-brand" href="#">Amazon</a>
+    <nav class="navbar navbar-expand-md navbar-dark navbar-style">
+      <a class="navbar-brand" href="index.html">Amazon</a>
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
@@ -47,7 +47,7 @@
           </div>
         </div>
 
-        <ul class="navbar-nav mr-auto">
+        <ul class="navbar-nav ml-auto">
           <li class="nav-item">
             <a class="nav-link" href="#">Orders</a>
           </li>
@@ -61,8 +61,11 @@
       </div>
     </nav>
 
-    <div class="container mt-5 mb-5">
+    <div class="container account-for-fixed mb-5">
+      <span id="for-alerts"></span>
+
       <form onsubmit="submitForm(event)">
+        <!-- <form> -->
         <div class="form-group">
           <label for="brand">Brand</label>
           <input id="brand" type="text" class="form-control" required />
@@ -90,7 +93,12 @@
           <label for="product-img">Product Image</label>
           <input id="product-img" type="text" class="form-control" required />
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <div class="d-flex justify-content-between">
+          <button type="submit" class="btn btn-primary">Submit</button>
+          <button onclick="deleteItem()" class="btn btn-danger d-none">
+            Delete
+          </button>
+        </div>
       </form>
     </div>
 
@@ -104,8 +112,49 @@
       integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
       crossorigin="anonymous"
     ></script>
-    <!-- <script src="index.js"></script> -->
+
     <script>
+      const phoneId = new URLSearchParams(window.location.search).get("id");
+      const forAlerts = document.getElementById("for-alerts");
+
+      const url = phoneId
+        ? "https://striveschool-api.herokuapp.com/api/product/" + phoneId
+        : "https://striveschool-api.herokuapp.com/api/product/";
+      const fetchMethod = phoneId ? "PUT" : "POST";
+
+      window.onload = async () => {
+        if (phoneId) {
+          //   url = "https://striveschool-api.herokuapp.com/api/product/" + phoneId;
+
+          //   document.querySelector("button").remove();
+          const submitBtn = document.querySelector("button[type=submit]");
+          submitBtn.classList.remove("btn-primary");
+          submitBtn.classList.add("btn-warning");
+          //   submitBtn.onclick = handleEdit();
+          submitBtn.innerText = "Edit";
+          //   document.querySelector("form").appendChild(submitBtn);
+          document.querySelector(".btn-danger").classList.remove("d-none");
+
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTFjZTBiMTJkNTI2MjAwMTViNmRjOGQiLCJpYXQiOjE2MjkyODI0ODEsImV4cCI6MTYzMDQ5MjA4MX0.KFzMXEuZKdknd6L7prl-dQh0EjsTHj4Dx-MfEdGaUuo",
+              "Content-Type": "application/json",
+            },
+          });
+          const productEdit = await response.json();
+          //   alert("Product added. ID is " + sentProduct._id);
+          console.log(productEdit);
+          document.getElementById("brand").value = productEdit.brand;
+          document.getElementById("product-name").value = productEdit.name;
+          document.getElementById("description").value =
+            productEdit.description;
+          document.getElementById("price").value = productEdit.price;
+          document.getElementById("product-img").value = productEdit.imageUrl;
+        }
+      };
+
       const submitForm = async function () {
         event.preventDefault();
 
@@ -118,25 +167,45 @@
           imageUrl: document.getElementById("product-img").value,
         };
         try {
-          const response = await fetch(
-            "https://striveschool-api.herokuapp.com/api/product/",
-            {
-              method: "POST",
-              body: JSON.stringify(productObject),
-              headers: {
-                Authorization:
-                  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTFjZTBiMTJkNTI2MjAwMTViNmRjOGQiLCJpYXQiOjE2MjkyODI0ODEsImV4cCI6MTYzMDQ5MjA4MX0.KFzMXEuZKdknd6L7prl-dQh0EjsTHj4Dx-MfEdGaUuo",
-                "Content-Type": "application/json",
-              },
-            }
-          );
+          const response = await fetch(url, {
+            method: fetchMethod,
+            body: JSON.stringify(productObject),
+            headers: {
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTFjZTBiMTJkNTI2MjAwMTViNmRjOGQiLCJpYXQiOjE2MjkyODI0ODEsImV4cCI6MTYzMDQ5MjA4MX0.KFzMXEuZKdknd6L7prl-dQh0EjsTHj4Dx-MfEdGaUuo",
+              "Content-Type": "application/json",
+            },
+          });
           const sentProduct = await response.json();
-          alert("Product added. ID is " + sentProduct._id);
+          forAlerts.innerHTML = `
+            <div class="alert alert-success" role="alert">
+                Nice job
+            </div>`;
           console.log(sentProduct);
+
+          document.getElementById("brand").value = "";
+          document.getElementById("product-name").value = "";
+          document.getElementById("description").value = "";
+          document.getElementById("price").value = "";
+          document.getElementById("product-img").value = "";
         } catch (err) {
           console.log(err);
           alert(err.message);
         }
+      };
+
+      const deleteItem = async function () {
+        try {
+          const response = await fetch(url, {
+            method: "DELETE",
+            headers: {
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTFjZTBiMTJkNTI2MjAwMTViNmRjOGQiLCJpYXQiOjE2MjkyODI0ODEsImV4cCI6MTYzMDQ5MjA4MX0.KFzMXEuZKdknd6L7prl-dQh0EjsTHj4Dx-MfEdGaUuo",
+              "Content-Type": "application/json",
+            },
+          });
+          const deletedItem = await response.json();
+        } catch (err) {}
       };
     </script>
   </body>
